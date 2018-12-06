@@ -39,7 +39,7 @@ SV* _parse_string(const char *str) {
   int found_eol = 1;
   int found_comment = 0;
   int found_sep  = 0;
-  
+
 
   for ( ; *ptr ; ++ptr ) {
     //PerlIO_printf( PerlIO_stderr(), "# C %c\n", *ptr );
@@ -77,9 +77,10 @@ SV* _parse_string(const char *str) {
 
     if ( *ptr == sep ) {
         //printf ("# separator key/value\n" );
-        end_key = ptr - 1;
-        found_sep = 1;
-        //end_val = start_val = ptr + 1;
+        if ( !end_key  ) {
+          end_key = ptr - 1;
+          found_sep = 1;
+        }
     } else if ( *ptr == eol ) {
         end_val = ptr - 1;
         found_eol = 1;
@@ -88,18 +89,38 @@ SV* _parse_string(const char *str) {
         if ( end_key > start_key ) {
           /* we got a key */
           av_push(av, newSVpv( start_key, (int) (end_key - start_key) + 1 ));
-        
+
           /* only add the value if we have a key */
           if ( end_val > start_val ) {
             av_push(av, newSVpv( start_val, (int) (end_val - start_val) + 1 ));
           } else {
-            av_push(av, &PL_sv_undef);  
-          }          
+            av_push(av, &PL_sv_undef);
+          }
         }
 
+        start_key = 0;
     }
 
   } /* end main for loop for *ptr */
+
+  /* handle the last entry */
+  if ( start_key ) {
+        end_val = ptr - 1;
+
+        /* check if we got a key */
+        if ( end_key > start_key ) {
+          /* we got a key */
+          av_push(av, newSVpv( start_key, (int) (end_key - start_key) + 1 ));
+
+          /* only add the value if we have a key */
+          if ( end_val > start_val ) {
+            av_push(av, newSVpv( start_val, (int) (end_val - start_val) + 1 ));
+          } else {
+            av_push(av, &PL_sv_undef);
+          }
+        }
+  }
+
 
   // av_push(av, newSVpv("END",3));
   // av_push(av, newSVpv("END",3));

@@ -17,9 +17,9 @@ use Test2::Plugin::NoWarnings;
 
 use Colon::Config;
 
-ok 1;
+{
 
-my $content = <<'EOS';
+    my $content = <<'EOS';
 key1:value
 key2: value
 # a comment
@@ -29,37 +29,58 @@ not a column
 last:value
 EOS
 
-#note explain Colon::Config::read_pp( $content );
+    #note explain Colon::Config::read_pp( $content );
 
-is Colon::Config::read( $content ),
-    [ 
+    is Colon::Config::read($content),
+        [
         key1 => 'value',
         key2 => 'value',
         last => 'value',
-    ], "read xs";
+        ],
+        "read xs";
 
-# note "aaaa: ", explain { @{ Colon::Config::read( $content ) } };
+}
 
-# note "aaaa: ", explain { @{ Colon::Config::read( $content ) } };
-# note "aaaa: ", explain { @{ Colon::Config::read( $content ) } };
-# note "aaaa: ", explain { @{ Colon::Config::read( $content ) } };
-# note "aaaa: ", explain { @{ Colon::Config::read( $content ) } };
+{
+    my $input;
 
+    is Colon::Config::read("key:value\n"), [ 'key', 'value' ], "key:value";
+    is Colon::Config::read("key:value"), [ 'key', 'value' ],
+        "key:value no newline";
+
+    $input = <<'EOS';
+fruit:apple
+vegetable:potato
+EOS
+    is Colon::Config::read($input), [qw/fruit apple vegetable potato/],
+        'two set of key/values';
+
+    $input = <<'EOS';
+fruit:apple
+fruit:orange
+EOS
+    is Colon::Config::read($input), [qw/fruit apple fruit orange/],
+        'duplicate set of key';
+
+    is Colon::Config::read(qq[key:value:with:colon\n]),
+        [ 'key', 'value:with:colon' ], "key:value:with:colon";
+
+    $input = qq[extra:newlines\n\n\n\n];
+    is Colon::Config::read($input), [ 'extra', 'newlines' ],
+        "extra trailing newlines";
+
+    $input = <<EOS;
+extra:newlines
+with
+incomplete
+key
+values
+EOS
+    is Colon::Config::read($input), [ 'extra', 'newlines' ],
+        "newlines with incomplete keys";
+
+}
 
 done_testing;
 
-
 __END__
-
-cygwin/cygwin.c-474-    setmntent (0, 0);
-cygwin/cygwin.c-475-    while ((mnt = getmntent (0))) {
-cygwin/cygwin.c:476:    AV* av = newAV();
-cygwin/cygwin.c-477-    av_push(av, newSVpvn(mnt->mnt_dir, strlen(mnt->mnt_dir)));
-cygwin/cygwin.c-478-    av_push(av, newSVpvn(mnt->mnt_fsname, strlen(mnt->mnt_fsname)));
-cygwin/cygwin.c-479-    av_push(av, newSVpvn(mnt->mnt_type, strlen(mnt->mnt_type)));
-cygwin/cygwin.c-480-    av_push(av, newSVpvn(mnt->mnt_opts, strlen(mnt->mnt_opts)));
-cygwin/cygwin.c-481-    XPUSHs(sv_2mortal(newRV_noinc((SV*)av)));
-cygwin/cygwin.c-482-    }
-cygwin/cygwin.c-483-    endmntent (0);
-cygwin/cygwin.c-484-    PUTBACK;
-cygwin/cygwin.c-485-}
