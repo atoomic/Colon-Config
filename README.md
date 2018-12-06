@@ -60,9 +60,19 @@ Colon::Config
 helper to read a configuration file using ':' as separator
 (could be customize later)
 
-# Usage and Examples
+This right now pretty similar to a double split like this one
 
-...
+```perl
+[ map { ( split( m{:\s_}, $_ ) )[ 0, 1 ] } split( m{\n}, $string ) ];
+```
+
+# Basic parsing rules
+
+- ':' is the default character separator between key and value 
+- spaces or tab characters after ':' are ignored
+- '#' indicates the beginning of a comment line
+- spaces or tab characters before a comment '#' are ignored
+- '\\n' is used for detecting 'End Of line'
 
 # Available functions
 

@@ -24,7 +24,7 @@ BEGIN {
 sub read_pp {
     my ( $config ) = @_;
 
-    return [ map { ( split( m{: }, $_ ) )[ 0, 1 ] } split( m{\n}, $config ) ];   
+    return [ map { ( split( m{: }, $_ ) )[ 0, 1 ] } split( m{\n}, $config ) ];
 }
 
 sub read_as_hash {
@@ -56,9 +56,25 @@ Colon::Config
 helper to read a configuration file using ':' as separator
 (could be customize later)
 
-=head1 Usage and Examples
+This right now pretty similar to a double split like this one
 
-...
+    [ map { ( split( m{:\s_}, $_ ) )[ 0, 1 ] } split( m{\n}, $string ) ];
+
+=head1 Basic parsing rules
+
+=over
+
+=item ':' is the default character separator between key and value 
+
+=item spaces or tab characters after ':' are ignored
+
+=item '#' indicates the beginning of a comment line
+
+=item spaces or tab characters before a comment '#' are ignored
+
+=item '\n' is used for detecting 'End Of line'
+
+=back
 
 =head1 Available functions
 
