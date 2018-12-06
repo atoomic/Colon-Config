@@ -126,13 +126,6 @@ SV* _parse_string(const char *str, int len) {
 MODULE = Colon__Config       PACKAGE = Colon::Config
 
 SV*
-get_basetime()
-CODE:
-  RETVAL = newSViv(PL_basetime);
-OUTPUT:
-  RETVAL
-
-SV*
 read(content)
   SV *content;
 CODE:
