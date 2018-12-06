@@ -59,6 +59,7 @@ EOS
     is Colon::Config::read("a:shortkey"), [ a => 'shortkey' ], q[short key];
     is Colon::Config::read("key:v"), [ key => 'v' ], q[short value];
     is Colon::Config::read("a:b"), [ a => 'b' ], q[short key/value];
+    is Colon::Config::read("a:b\n"), [ a => 'b' ], q[short key/value with newline];
 
     $input = <<'EOS';
 fruit:apple

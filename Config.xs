@@ -79,21 +79,21 @@ SV* _parse_string(const char *str, int len) {
     if ( *ptr == sep ) {
         //printf ("# separator key/value\n" );
         if ( !end_key  ) {
-          end_key = ptr - 1;
+          end_key = ptr;
           found_sep = 1;
         }
     } else if ( *ptr == eol ) {
-        end_val = ptr - 1;
+        end_val = ptr;
         found_eol = 1;
 
         /* check if we got a key */
-        if ( end_key >= start_key ) {
+        if ( end_key > start_key ) {
           /* we got a key */
-          av_push(av, newSVpv( start_key, (int) (end_key - start_key) + 1 ));
+          av_push(av, newSVpv( start_key, (int) (end_key - start_key) ));
 
           /* only add the value if we have a key */
-          if ( end_val >= start_val ) {
-            av_push(av, newSVpv( start_val, (int) (end_val - start_val) + 1 ));
+          if ( end_val > start_val ) {
+            av_push(av, newSVpv( start_val, (int) (end_val - start_val) ));
           } else {
             av_push(av, &PL_sv_undef);
           }
@@ -106,16 +106,16 @@ SV* _parse_string(const char *str, int len) {
 
   /* handle the last entry */
   if ( start_key ) {
-        end_val = ptr - 1;
+        end_val = ptr;
 
         /* check if we got a key */
-        if ( end_key >= start_key ) {
+        if ( end_key > start_key ) {
           /* we got a key */
-          av_push(av, newSVpv( start_key, (int) (end_key - start_key) + 1 ));
+          av_push(av, newSVpv( start_key, (int) (end_key - start_key) ));
 
           /* only add the value if we have a key */
-          if ( end_val >= start_val ) {
-            av_push(av, newSVpv( start_val, (int) (end_val - start_val) + 1 ));
+          if ( end_val > start_val ) {
+            av_push(av, newSVpv( start_val, (int) (end_val - start_val) ));
           } else {
             av_push(av, &PL_sv_undef);
           }
