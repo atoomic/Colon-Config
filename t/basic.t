@@ -19,6 +19,7 @@ use Colon::Config;
 
 {
 
+    # kind of a combo test
     my $content = <<'EOS';
 key1:value
 key2: value
