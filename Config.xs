@@ -15,11 +15,11 @@
 #include <embed.h>
 
 /* prototypes */
-SV* _parse_string(const char *str);
+SV* _parse_string(const char *str, int len);
 
 
 /* functions */
-SV* _parse_string(const char *str) {
+SV* _parse_string(const char *str, int len) {
   char *ptr = (char *) str; /* todo: preserve the const state of the pointer */
   AV   *av;
   char *start_key, *end_key;
@@ -40,10 +40,11 @@ SV* _parse_string(const char *str) {
   int found_comment = 0;
   int found_sep  = 0;
 
-
-  for ( ; *ptr ; ++ptr ) {
+  int i;
+  for ( i = 0; i < len ; ++i, ++ptr ) {
     //PerlIO_printf( PerlIO_stderr(), "# C %c\n", *ptr );
     //printf("# char %c\n", *ptr );
+    if ( ! *ptr ) continue; /* skip \0 */
 
     /* skip all characters in a comment block */
     if ( found_comment ) {
@@ -86,12 +87,12 @@ SV* _parse_string(const char *str) {
         found_eol = 1;
 
         /* check if we got a key */
-        if ( end_key > start_key ) {
+        if ( end_key >= start_key ) {
           /* we got a key */
           av_push(av, newSVpv( start_key, (int) (end_key - start_key) + 1 ));
 
           /* only add the value if we have a key */
-          if ( end_val > start_val ) {
+          if ( end_val >= start_val ) {
             av_push(av, newSVpv( start_val, (int) (end_val - start_val) + 1 ));
           } else {
             av_push(av, &PL_sv_undef);
@@ -108,12 +109,12 @@ SV* _parse_string(const char *str) {
         end_val = ptr - 1;
 
         /* check if we got a key */
-        if ( end_key > start_key ) {
+        if ( end_key >= start_key ) {
           /* we got a key */
           av_push(av, newSVpv( start_key, (int) (end_key - start_key) + 1 ));
 
           /* only add the value if we have a key */
-          if ( end_val > start_val ) {
+          if ( end_val >= start_val ) {
             av_push(av, newSVpv( start_val, (int) (end_val - start_val) + 1 ));
           } else {
             av_push(av, &PL_sv_undef);
@@ -144,7 +145,7 @@ read(content)
   SV *content;
 CODE:
   if ( content && SvPOK(content) ) {
-    RETVAL = _parse_string( SvPVX_const( content ) );
+    RETVAL = _parse_string( SvPVX_const(content), SvCUR(content) );
   } else {
     RETVAL = &PL_sv_undef;
   }

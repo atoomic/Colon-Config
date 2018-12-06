@@ -49,6 +49,17 @@ EOS
     is Colon::Config::read("key:value"), [ 'key', 'value' ],
         "key:value no newline";
 
+    is Colon::Config::read("key:value\n\0got:a zero"), [ 'key', 'value', 'got', 'a zero' ], q[\0 in the string]
+        or diag explain Colon::Config::read("key:value\n\0got:a zero");
+
+    my $str = "a"x 100;
+    $str = "key:value";
+    is Colon::Config::read($str), [ key => 'value' ], q[using CUR and not LEN];
+
+    is Colon::Config::read("a:shortkey"), [ a => 'shortkey' ], q[short key];
+    is Colon::Config::read("key:v"), [ key => 'v' ], q[short value];
+    is Colon::Config::read("a:b"), [ a => 'b' ], q[short key/value];
+
     $input = <<'EOS';
 fruit:apple
 vegetable:potato
