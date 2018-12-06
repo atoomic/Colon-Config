@@ -30,11 +30,22 @@ helper to read a configuration file using ':' as separator
 
 # Usage and Examples
 
-todo
+# Available functions
+
+## read( $content )
+
+Parse the string $content and return an Array Ref with the list of key/values parsed.
+
+Note: return undef when not called with a string
+
+## read\_as\_hash( $content )
+
+This helper is provided as a convenient feature if want to manipulate the Array Ref
+from read as a Hash Ref.
 
 # TODO
 
-- support for custom characters
+- support for custom characters: separator, end of line, spaces, ...
 
 # LICENSE
 

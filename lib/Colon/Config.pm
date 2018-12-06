@@ -27,6 +27,15 @@ sub read_pp {
     return [ map { ( split( m{: }, $_ ) )[ 0, 1 ] } split( m{\n}, $config ) ];   
 }
 
+sub read_as_hash {
+    my ( $config ) = @_;
+
+    my $av = Colon::Config::read($config);
+    return unless $av;
+
+    return { @$av };
+}
+
 
 1;
 
@@ -49,13 +58,25 @@ helper to read a configuration file using ':' as separator
 
 =head1 Usage and Examples
 
-todo
+
+=head1 Available functions
+
+=head2 read( $content )
+
+Parse the string $content and return an Array Ref with the list of key/values parsed.
+
+Note: return undef when not called with a string
+
+=head2 read_as_hash( $content )
+
+This helper is provided as a convenient feature if want to manipulate the Array Ref
+from read as a Hash Ref.
 
 =head1 TODO
 
 =over
 
-=item support for custom characters
+=item support for custom characters: separator, end of line, spaces, ...
 
 =back
 

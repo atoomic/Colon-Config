@@ -94,6 +94,17 @@ EOS
 
 }
 
+{
+    note "read_as_hash";
+    my $input;
+    $input = <<'EOS';
+fruit:apple
+vegetable:potato
+EOS
+    is Colon::Config::read_as_hash($input), { qw/fruit apple vegetable potato/ }, 'two set of key/values';
+
+}
+
 done_testing;
 
 __END__

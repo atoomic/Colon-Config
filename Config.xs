@@ -27,9 +27,9 @@ SV* _parse_string(const char *str, int len) {
 
   av = newAV();
 
-  char eol      = '\n';
-  char sep      = ':'; /* customize it later */
-  char comment  = '#';
+  const char eol      = '\n';
+  const char sep      = ':'; /* customize it later */
+  const char comment  = '#';
 
   start_key = ptr;
   end_key   = 0;
