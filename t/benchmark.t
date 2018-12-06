@@ -63,30 +63,31 @@ __END__
 
 # Using 1 key/value pairs
              Rate read_pp read_xs
-read_pp  593212/s      --    -69%
-read_xs 1935895/s    226%      --
+read_pp  628770/s      --    -66%
+read_xs 1869031/s    197%      --
 #
 # Using 4 key/value pairs
             Rate read_pp read_xs
-read_pp 222568/s      --    -60%
-read_xs 553491/s    149%      --
+read_pp 237209/s      --    -58%
+read_xs 569785/s    140%      --
 #
 # Using 16 key/value pairs
             Rate read_pp read_xs
-read_pp  68014/s      --    -57%
-read_xs 157592/s    132%      --
+read_pp  66985/s      --    -57%
+read_xs 157592/s    135%      --
 #
 # Using 64 key/value pairs
            Rate read_pp read_xs
-read_pp 17110/s      --    -58%
-read_xs 40617/s    137%      --
+read_pp 17805/s      --    -59%
+read_xs 43798/s    146%      --
 #
 # Using 256 key/value pairs
            Rate read_pp read_xs
-read_pp  4689/s      --    -59%
-read_xs 11466/s    145%      --
+read_pp  4678/s      --    -54%
+read_xs 10278/s    120%      --
 #
 # Using 1024 key/value pairs
           Rate read_pp read_xs
-read_pp 1195/s      --    -54%
-read_xs 2600/s    118%      --
+read_pp 1175/s      --    -55%
+read_xs 2598/s    121%      --
+#
