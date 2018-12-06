@@ -4,7 +4,7 @@ Colon::Config - helper to read a configuration file using ':' as separator
 
 # VERSION
 
-version 0.001
+version 0.002
 
 # SYNOPSIS
 
@@ -62,13 +62,13 @@ done_testing;
 
 Colon::Config
 
-helper to read a configuration file using ':' as separator
+XS helper to read a configuration file using ':' as separator
 (could be customize later)
 
 This right now pretty similar to a double split like this one
 
 ```perl
-[ map { ( split( m{:\s_}, $_ ) )[ 0, 1 ] } split( m{\n}, $string ) ];
+[ map { ( split( m{:\s+}, $_ ) )[ 0, 1 ] } split( m{\n}, $string ) ];
 ```
 
 # Basic parsing rules
