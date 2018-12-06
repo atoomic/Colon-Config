@@ -5,11 +5,11 @@ Makefile
 _build/
 blib/
 pm_to_blib
-FileCheck.bs
-FileCheck.c
-FileCheck.o
+Config.bs
+Config.c
+Config.o
 .gdb_history
 Makefile.old
 MANIFEST.bak
-Overload-FileCheck-*
+Colon-*
 .build
