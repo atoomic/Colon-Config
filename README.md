@@ -33,22 +33,27 @@ sample:value:with:column
 last:value
 EOS
 
-is Colon::Config::read( $config_sample ), [
-       # note this is an Array Ref by default
-   'fruit' =>  'banana',
-   'world' => 'space',
-   'empty' => undef,
-   'sample' => 'value:with:column',
-   'last' => 'value'   
-] or diag explain Colon::Config::read( $config_sample );
+my $array;
+is $array = Colon::Config::read($config_sample), [
 
-is Colon::Config::read_as_hash( $config_sample ), {
-   'fruit' =>  'banana',
-   'world' => 'space',
-   'empty' => undef,
-   'sample' => 'value:with:column',
-   'last' => 'value'   
-} or diag explain Colon::Config::read( $config_sample );
+    # note this is an Array Ref by default
+    'fruit'  => 'banana',
+    'world'  => 'space',
+    'empty'  => undef,
+    'sample' => 'value:with:column',
+    'last'   => 'value'
+  ]
+  or diag explain $array;
+
+my $hash;
+is $hash = Colon::Config::read_as_hash($config_sample), {
+    'fruit'  => 'banana',
+    'world'  => 'space',
+    'empty'  => undef,
+    'sample' => 'value:with:column',
+    'last'   => 'value'
+  }
+  or diag explain $hash;
 
 done_testing;
 ```
