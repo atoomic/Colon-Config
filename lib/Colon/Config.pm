@@ -58,6 +58,7 @@ helper to read a configuration file using ':' as separator
 
 =head1 Usage and Examples
 
+...
 
 =head1 Available functions
 
