@@ -20,7 +20,7 @@ SV* _parse_string(const char *str);
 
 /* functions */
 SV* _parse_string(const char *str) {
-  char *ptr = str;
+  char *ptr = (char *) str; /* todo: preserve the const state of the pointer */
   AV   *av;
   char *start_key, *end_key;
   char *start_val, *end_val;
@@ -36,8 +36,8 @@ SV* _parse_string(const char *str) {
   start_val = 0;
   end_val   = 0;
 
-  int start_line = 1;
-  int in_comment = 0;
+  int found_eol = 1;
+  int found_comment = 0;
   int found_sep  = 0;
   
 
@@ -46,9 +46,9 @@ SV* _parse_string(const char *str) {
     //printf("# char %c\n", *ptr );
 
     /* skip all characters in a comment block */
-    if ( in_comment ) {
+    if ( found_comment ) {
       if ( *ptr == eol )
-        in_comment = 0;
+        found_comment = 0;
       continue;
     }
 
@@ -60,17 +60,17 @@ SV* _parse_string(const char *str) {
     }
 
     /* get to the first valuable char of the line */
-    if ( start_line ) {
+    if ( found_eol ) { /* starting a line */
       /* spaces at the beginning of a line */
       if ( *ptr == ' ' || *ptr == '\t' ) {
         continue;
       }
       if ( *ptr == comment ) {
-          in_comment = 1;
+          found_comment = 1;
           continue;
       }
       /* we have a real character to start the line */
-      start_line = 0;
+      found_eol = 0;
       start_key = ptr;
       end_key   = 0;
     }
@@ -82,7 +82,7 @@ SV* _parse_string(const char *str) {
         //end_val = start_val = ptr + 1;
     } else if ( *ptr == eol ) {
         end_val = ptr - 1;
-        start_line = 1;
+        found_eol = 1;
 
         /* check if we got a key */
         if ( end_key > start_key ) {
@@ -94,9 +94,7 @@ SV* _parse_string(const char *str) {
             av_push(av, newSVpv( start_val, (int) (end_val - start_val) + 1 ));
           } else {
             av_push(av, &PL_sv_undef);  
-          }
-          
-
+          }          
         }
 
     }
