@@ -83,21 +83,26 @@ SV* _parse_string(const char *str, int len) {
           found_sep = 1;
         }
     } else if ( *ptr == eol ) {
-        end_val = ptr;
-        found_eol = 1;
 
-        /* check if we got a key */
-        if ( end_key > start_key ) {
-          /* we got a key */
-          av_push(av, newSVpv( start_key, (int) (end_key - start_key) ));
+#define __PARSE_STRING_LINE /* reuse code for the last line */ \
+        end_val = ptr; \
+        found_eol = 1; \
+\
+        /* check if we got a key */ \
+        if ( end_key > start_key ) { \
+          /* we got a key */ \
+          av_push(av, newSVpv( start_key, (int) (end_key - start_key) )); \
+\
+          /* only add the value if we have a key */ \
+          if ( end_val > start_val ) { \
+            av_push(av, newSVpv( start_val, (int) (end_val - start_val) )); \
+          } else { \
+            av_push(av, &PL_sv_undef); \
+          } \
+        } \
+/* end of __PARSE_STRING_LINE */        
 
-          /* only add the value if we have a key */
-          if ( end_val > start_val ) {
-            av_push(av, newSVpv( start_val, (int) (end_val - start_val) ));
-          } else {
-            av_push(av, &PL_sv_undef);
-          }
-        }
+        __PARSE_STRING_LINE
 
         start_key = 0;
     }
@@ -106,20 +111,7 @@ SV* _parse_string(const char *str, int len) {
 
   /* handle the last entry */
   if ( start_key ) {
-        end_val = ptr;
-
-        /* check if we got a key */
-        if ( end_key > start_key ) {
-          /* we got a key */
-          av_push(av, newSVpv( start_key, (int) (end_key - start_key) ));
-
-          /* only add the value if we have a key */
-          if ( end_val > start_val ) {
-            av_push(av, newSVpv( start_val, (int) (end_val - start_val) ));
-          } else {
-            av_push(av, &PL_sv_undef);
-          }
-        }
+      __PARSE_STRING_LINE
   }
 
 
