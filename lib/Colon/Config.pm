@@ -10,7 +10,7 @@ package Colon::Config;
 use strict;
 use warnings;
 
-# ABSTRACT: helper to read a configuration file using ':' as separator
+# ABSTRACT: XS helper to read a configuration file using ':' as separator
 
 
 BEGIN {
@@ -24,7 +24,7 @@ BEGIN {
 sub read_pp {
     my ( $config ) = @_;
 
-    return [ map { ( split( m{: }, $_ ) )[ 0, 1 ] } split( m{\n}, $config ) ];
+    return [ map { ( split( m{:\s+}, $_ ) )[ 0, 1 ] } split( m{\n}, $config ) ];
 }
 
 sub read_as_hash {

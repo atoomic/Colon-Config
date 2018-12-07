@@ -1,6 +1,6 @@
 # NAME
 
-Colon::Config - helper to read a configuration file using ':' as separator
+Colon::Config - XS helper to read a configuration file using ':' as separator
 
 # VERSION
 
