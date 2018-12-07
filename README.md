@@ -4,7 +4,7 @@ Colon::Config - XS helper to read a configuration file using ':' as separator
 
 # VERSION
 
-version 0.002
+version 0.003
 
 # SYNOPSIS
 
