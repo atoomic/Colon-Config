@@ -7,7 +7,7 @@ use 5.010;
 use ExtUtils::MakeMaker;
 
 my %WriteMakefileArgs = (
-  "ABSTRACT" => "helper to read a configuration file using ':' as separator",
+  "ABSTRACT" => "XS helper to read a configuration file using ':' as separator",
   "AUTHOR" => "Nicolas R <atoomic\@cpan.org>",
   "CONFIGURE_REQUIRES" => {
     "ExtUtils::MakeMaker" => 0
