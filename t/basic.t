@@ -105,6 +105,25 @@ EOS
 
 }
 
+{
+    note "utf8";
+    my $input = <<'EOS';
+hèllö:wørld
+plain:text
+õther:value
+key:chårs
+mõther:chårs
+EOS
+    is Colon::Config::read_as_hash($input), { qw/
+        hèllö wørld
+        plain text 
+        õther value
+        key chårs
+        mõther chårs
+        / }, 'mix of utf8 and non utf8 chars';
+
+}
+
 done_testing;
 
 __END__
