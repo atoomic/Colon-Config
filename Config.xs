@@ -16,9 +16,9 @@
 
 /* prototypes */
 SV* _parse_string(SV *sv);
-SV* _parse_string_field(SV *sv, int field);
+SV* _parse_string_field(SV *sv, int need_field);
 
-SV* _parse_string_field(SV *sv, int field) {
+SV* _parse_string_field(SV *sv, int need_field) {
   int len = SvCUR(sv);
   char *ptr = (char *) SvPVX_const(sv); /* todo: preserve the const state of the pointer */
   AV   *av;
@@ -43,31 +43,33 @@ SV* _parse_string_field(SV *sv, int field) {
   int found_eol = 1;
   int found_comment = 0;
   int found_sep  = 0;
+  int found_field = 0;
 
   for ( max = ptr + len ; ptr < max; ++ptr ) {
     if ( ! *ptr ) continue; /* skip \0 so we can parse binaries strings */
     if ( *ptr == line_feed ) continue; /* ignore \r */
 
+    //printf( "# %c\n", *ptr );
+
     /* skip all characters in a comment block */
     if ( found_comment ) {
-      if ( *ptr == eol )
-        found_comment = 0;
+      if ( *ptr == eol ) found_comment = 0;
       continue;
     }
 
-    if ( found_sep ) {
-      if ( *ptr == ' ' || *ptr == '\t' )
-        continue;
-      found_sep = 0;
+    if ( (need_field == 0 && found_sep) || (need_field && found_sep == need_field) ) {
+      if ( *ptr == ' ' || *ptr == '\t' ) continue;
+      if (need_field == 0) found_sep = 0;
+      else ++found_sep; /* moving it away */
       end_val = start_val = ptr;
+      found_field = 0;
     }
 
     /* get to the first valuable char of the line */
     if ( found_eol ) { /* starting a line */
       /* spaces at the beginning of a line */
-      if ( *ptr == ' ' || *ptr == '\t' || *ptr == line_feed ) {
+      if ( *ptr == ' ' || *ptr == '\t' || *ptr == line_feed )
         continue;
-      }
       if ( *ptr == comment ) {
           found_comment = 1;
           continue;
@@ -76,19 +78,30 @@ SV* _parse_string_field(SV *sv, int field) {
       found_eol = 0;
       start_key = ptr;
       end_key   = 0;
+      end_val   = 0;
+      found_sep = 0;
+      start_val = 0;
+      found_field = 0;
     }
 
     if ( *ptr == sep ) {
         //printf ("# separator key/value\n" );
+        if (need_field) ++found_sep;  
         if ( !end_key  ) {
-          end_key = ptr;
-          found_sep = 1;
+          end_key = ptr;  
+          if ( !need_field) found_sep = 1;        
         }
-    } else if ( *ptr == eol ) {
+
+        if ( need_field && found_sep == need_field + 2 ) {          
+          end_val = ptr;
+          found_field = 1;
+        }
+
+    }  else if ( *ptr == eol ) { /* only handle the line once we reach a \n */
 
 #define __PARSE_STRING_LINE_FIELD /* reuse code for the last line */ \
-        end_val = ptr; \
-        if (*end_val == line_feed) end_val = ptr - 1; \
+        if ( ( need_field == 0 || found_field == 0) && end_val == start_val) end_val = ptr; \
+        if (end_val && *end_val == line_feed) end_val = ptr - 1; \
         found_eol = 1; \
 \
         /* check if we got a key */ \
@@ -97,11 +110,11 @@ SV* _parse_string_field(SV *sv, int field) {
           av_push(av, newSVpvn_flags( start_key, (int) (end_key - start_key), is_utf8 )); \
 \
           /* remove the line_feed chars if any */ \
-          while ( end_val > start_val && *(end_val - 1) == line_feed ) {\
-            --end_val;\
-          }\
+          while ( start_val && end_val > start_val && *(end_val - 1) == line_feed ) { \
+            --end_val; \
+          }  \
           /* only add the value if we have a key */ \
-          if ( end_val > start_val ) { \
+          if ( start_val && ( (int ) ( end_val - start_val ) ) ) { \
             av_push(av, newSVpvn_flags( start_val, (int) (end_val - start_val), is_utf8 )); \
           } else { \
             av_push(av, &PL_sv_undef); \
@@ -203,11 +216,11 @@ SV* _parse_string(SV *sv) {
           av_push(av, newSVpvn_flags( start_key, (int) (end_key - start_key), is_utf8 )); \
 \
           /* remove the line_feed chars if any */ \
-          while ( end_val > start_val && *(end_val - 1) == line_feed ) {\
+          while ( start_val && end_val > start_val && *(end_val - 1) == line_feed ) {\
             --end_val;\
           }\
           /* only add the value if we have a key */ \
-          if ( end_val > start_val ) { \
+          if ( start_val && end_val > start_val ) { \
             av_push(av, newSVpvn_flags( start_val, (int) (end_val - start_val), is_utf8 )); \
           } else { \
             av_push(av, &PL_sv_undef); \
