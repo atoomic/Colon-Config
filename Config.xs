@@ -33,6 +33,7 @@ SV* _parse_string(SV *sv) {
   const char eol      = '\n';
   const char sep      = ':'; /* customize it later */
   const char comment  = '#';
+  const char line_feed = '\r';
 
   start_key = ptr;
   end_key   = 0;
@@ -45,9 +46,8 @@ SV* _parse_string(SV *sv) {
 
   int i;
   for ( i = 0; i < len ; ++i, ++ptr ) {
-    //PerlIO_printf( PerlIO_stderr(), "# C %c\n", *ptr );
-    //printf("# char %c\n", *ptr );
     if ( ! *ptr ) continue; /* skip \0 */
+    //if ( *ptr == line_feed ) continue; /* ignore \r */
 
     /* skip all characters in a comment block */
     if ( found_comment ) {
@@ -66,7 +66,7 @@ SV* _parse_string(SV *sv) {
     /* get to the first valuable char of the line */
     if ( found_eol ) { /* starting a line */
       /* spaces at the beginning of a line */
-      if ( *ptr == ' ' || *ptr == '\t' ) {
+      if ( *ptr == ' ' || *ptr == '\t' || *ptr == line_feed ) {
         continue;
       }
       if ( *ptr == comment ) {
@@ -89,6 +89,7 @@ SV* _parse_string(SV *sv) {
 
 #define __PARSE_STRING_LINE /* reuse code for the last line */ \
         end_val = ptr; \
+        if (*end_val == line_feed) end_val = ptr - 1; \
         found_eol = 1; \
 \
         /* check if we got a key */ \
@@ -96,6 +97,10 @@ SV* _parse_string(SV *sv) {
           /* we got a key */ \
           av_push(av, newSVpvn_flags( start_key, (int) (end_key - start_key), is_utf8 )); \
 \
+          /* remove the line_feed chars if any */ \
+          while ( end_val > start_val && *(end_val - 1) == line_feed ) {\
+            --end_val;\
+          }\
           /* only add the value if we have a key */ \
           if ( end_val > start_val ) { \
             av_push(av, newSVpvn_flags( start_val, (int) (end_val - start_val), is_utf8 )); \
@@ -117,12 +122,7 @@ SV* _parse_string(SV *sv) {
       __PARSE_STRING_LINE
   }
 
-
-  // av_push(av, newSVpv("END",3));
-  // av_push(av, newSVpv("END",3));
-
   return (SV*) (newRV_noinc((SV*) av));
-  //return (SV*) sv_2mortal(newRV_noinc((SV*) av));
 }
 
 
