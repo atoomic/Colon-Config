@@ -44,8 +44,7 @@ SV* _parse_string(SV *sv) {
   int found_comment = 0;
   int found_sep  = 0;
 
-  int i;
-  for ( i = 0; i < len ; ++i, ++ptr ) {
+  for ( char *max = ptr + len ; ptr < max; ++ptr ) {
     if ( ! *ptr ) continue; /* skip \0 */
     if ( *ptr == line_feed ) continue; /* ignore \r */
 
