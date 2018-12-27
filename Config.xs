@@ -47,7 +47,7 @@ SV* _parse_string(SV *sv) {
   int i;
   for ( i = 0; i < len ; ++i, ++ptr ) {
     if ( ! *ptr ) continue; /* skip \0 */
-    //if ( *ptr == line_feed ) continue; /* ignore \r */
+    if ( *ptr == line_feed ) continue; /* ignore \r */
 
     /* skip all characters in a comment block */
     if ( found_comment ) {
