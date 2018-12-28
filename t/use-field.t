@@ -55,7 +55,7 @@ $a = Colon::Config::read_field( $content, 2 );
 is $a,
     [
     key1 => 'f2',
-    key2 => 'f2 ', # trim the space ??
+    key2 => 'f2',
     key3 => undef,
     last => undef,
     ],
@@ -87,3 +87,4 @@ is $a,
 done_testing;
 
 __END__
+            ( ( *(end_val - 1) == line_feed ) || ( *(end_val - 1) == ' ' ) || ( *(end_val - 1) == '\t' ) ) \

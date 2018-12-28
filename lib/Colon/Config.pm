@@ -28,9 +28,11 @@ sub read_pp {
 }
 
 sub read_as_hash {
-    my ( $config ) = @_;
+    my ( $config, $field ) = @_;
 
-    my $av = Colon::Config::read($config);
+    $field = 0 unless defined $field;
+
+    my $av = Colon::Config::read_field($config, $field );
     return unless $av;
 
     return { @$av };
