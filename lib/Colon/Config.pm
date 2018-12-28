@@ -32,7 +32,7 @@ sub read_as_hash {
 
     $field = 0 unless defined $field;
 
-    my $av = Colon::Config::read_field($config, $field );
+    my $av = Colon::Config::read($config, $field );
     return unless $av;
 
     return { @$av };

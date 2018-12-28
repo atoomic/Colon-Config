@@ -29,9 +29,7 @@ not a column
 last:value
 EOS
 
-#note explain Colon::Config::read_pp( $content );
-
-is Colon::Config::read_field( $content, 0 ),
+is Colon::Config::read( $content, 0 ),
     [
     key1 => 'f1:f2:f3',
     key2 => 'f1: f2 : f3',
@@ -40,7 +38,7 @@ is Colon::Config::read_field( $content, 0 ),
     ],
     "read default field=0";
 
-my $a = Colon::Config::read_field( $content, 1 );
+my $a = Colon::Config::read( $content, 1 );
 is $a,
     [
     key1 => 'f1',
@@ -51,7 +49,7 @@ is $a,
     "read field=1" or diag explain { @$a };
 
 
-$a = Colon::Config::read_field( $content, 2 );
+$a = Colon::Config::read( $content, 2 );
 is $a,
     [
     key1 => 'f2',
@@ -61,7 +59,7 @@ is $a,
     ],
     "read field=2" or diag explain { @$a };
 
-$a = Colon::Config::read_field( $content, 3 );
+$a = Colon::Config::read( $content, 3 );
 is $a,
     [
     key1 => 'f3',
@@ -71,7 +69,7 @@ is $a,
     ],
     "read field=3" or diag explain { @$a };
 
-$a = Colon::Config::read_field( $content, 4 );
+$a = Colon::Config::read( $content, 4 );
 is $a,
     [
     key1 => undef,
@@ -82,9 +80,11 @@ is $a,
     "read field=4" or diag explain { @$a };
 
 
-
+like ( 
+    dies { Colon::Config::read( $content, 1, 2 ) },
+    qr/Too many arguments/
+);
 
 done_testing;
 
 __END__
-            ( ( *(end_val - 1) == line_feed ) || ( *(end_val - 1) == ' ' ) || ( *(end_val - 1) == '\t' ) ) \
