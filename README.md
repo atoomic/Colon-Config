@@ -55,7 +55,7 @@ is $hash = Colon::Config::read_as_hash($config_sample), {
   }
   or diag explain $hash;
 
-# you can also reaad the value from any custom field
+# you can also read the value from any custom field
 
 my $data = <<EOS;
 ali:x:1000:1000:Ali Ben:/home/ali:/bin/zsh
@@ -125,16 +125,63 @@ This right now pretty similar to a double split like this one
 
 # Available functions
 
-## read( $content )
+## read( $content, \[ $field=0 \] )
 
 Parse the string $content and return an Array Ref with the list of key/values parsed.
+By default the value is the whole string after the first ':'.
+
+But you can also read the value from any custom field, where 1 is the first field after the key...
+
+```perl
+#!perl
+
+use strict;
+use warnings;
+
+use Test2::Bundle::Extended;
+use Test2::Tools::Explain;
+use Test2::Plugin::NoWarnings;
+
+use Colon::Config;
+
+my $data = <<'EOS';
+fruits:apple:banana:orange
+veggies:beet:corn:kale
+EOS
+
+is Colon::Config::read($data), [
+    fruits  => 'apple:banana:orange',
+    veggies => 'beet:corn:kale',
+];
+
+is Colon::Config::read( $data, 0 ), Colon::Config::read($data);
+
+is Colon::Config::read( $data, 1 ), [
+    fruits  => 'apple',
+    veggies => 'beet',
+];
+
+is Colon::Config::read( $data, 2 ), [
+    fruits  => 'banana',
+    veggies => 'corn',
+];
+
+is Colon::Config::read( $data, 99 ), [
+    fruits  => undef,
+    veggies => undef,
+];
+
+done_testing;
+```
 
 Note: return undef when not called with a string
 
-## read\_as\_hash( $content )
+## read\_as\_hash( $content, \[ $field=0 \] )
 
 This helper is provided as a convenient feature if want to manipulate the Array Ref
 from read as a Hash Ref.
+
+Similarly to read you can also specify from which field the value should be read.
 
 # Benchmark
 

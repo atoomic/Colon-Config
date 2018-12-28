@@ -42,7 +42,7 @@ is $hash = Colon::Config::read_as_hash($config_sample), {
   }
   or diag explain $hash;
 
-# you can also reaad the value from any custom field
+# you can also read the value from any custom field
 
 my $data = <<EOS;
 ali:x:1000:1000:Ali Ben:/home/ali:/bin/zsh

@@ -80,16 +80,23 @@ This right now pretty similar to a double split like this one
 
 =head1 Available functions
 
-=head2 read( $content )
+=head2 read( $content, [ $field=0 ] )
 
 Parse the string $content and return an Array Ref with the list of key/values parsed.
+By default the value is the whole string after the first ':'.
+
+But you can also read the value from any custom field, where 1 is the first field after the key...
+
+# EXAMPLE: t/example-fruits.t
 
 Note: return undef when not called with a string
 
-=head2 read_as_hash( $content )
+=head2 read_as_hash( $content, [ $field=0 ] )
 
 This helper is provided as a convenient feature if want to manipulate the Array Ref
 from read as a Hash Ref.
+
+Similarly to read you can also specify from which field the value should be read.
 
 =head1 Benchmark
 
