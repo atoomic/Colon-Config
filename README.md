@@ -178,7 +178,7 @@ Note: return undef when not called with a string
 
 ## read\_as\_hash( $content, \[ $field=0 \] )
 
-This helper is provided as a convenient feature if want to manipulate the Array Ref
+This helper is provided as a convenient feature if you want to manipulate the Array Ref
 from read as a Hash Ref.
 
 Similarly to read you can also specify from which field the value should be read.

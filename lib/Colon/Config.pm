@@ -33,7 +33,7 @@ sub read_as_hash {
     $field = 0 unless defined $field;
 
     my $av = Colon::Config::read($config, $field );
-    return unless $av;
+    return {} unless $av;
 
     return { @$av };
 }
@@ -93,7 +93,7 @@ Note: return undef when not called with a string
 
 =head2 read_as_hash( $content, [ $field=0 ] )
 
-This helper is provided as a convenient feature if want to manipulate the Array Ref
+This helper is provided as a convenient feature if you want to manipulate the Array Ref
 from read as a Hash Ref.
 
 Similarly to read you can also specify from which field the value should be read.
