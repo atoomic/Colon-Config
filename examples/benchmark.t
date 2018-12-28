@@ -15,19 +15,16 @@ use Test2::Tools::Explain;
 use Test2::Plugin::NoWarnings;
 
 use Colon::Config;
+use Benchmark;
 
-skip_all( "benchmark skipped, run it with BENCHMARK=1") unless $ENV{BENCHMARK};
-
-require Benchmark;
-
-our $S;
+our $DATA;
 
 my $map = {
     read_xs => sub {
-        return Colon::Config::read( $S );
+        return Colon::Config::read( $DATA );
     },
     read_pp => sub {
-        return Colon::Config::read_pp( $S ); # limitation on \s+
+        return Colon::Config::read_pp( $DATA ); # limitation on \s+
     },
 };
 
@@ -35,7 +32,7 @@ note "sanity check";
 
 foreach my $method ( sort keys %$map ) {
 
-    $S = <<EOS;
+    $DATA = <<EOS;
 key1: value
 key2: another value
 EOS
@@ -46,48 +43,98 @@ note "Running benchmark";
 for my $size ( 1, 4, 16, 64, 256, 1024 ) {
     note "Using $size key/value pairs\n";
 
-    $S = '';
+    $DATA = '';
     foreach my $id ( 1..$size ) {
-        $S .= "key$id: value is $id\n";
+        $DATA .= "key$id: value is $id\n";
     }
-
+next;
     Benchmark::cmpthese( - 5 => $map );
     note "";
 }
 
+=pod
 
+        # Using 1 key/value pairs
+                     Rate read_pp read_xs
+        read_pp  442226/s      --    -75%
+        read_xs 1767796/s    300%      --
+        #
+        # Using 4 key/value pairs
+                    Rate read_pp read_xs
+        read_pp 172602/s      --    -68%
+        read_xs 532991/s    209%      --
+        #
+        # Using 16 key/value pairs
+                    Rate read_pp read_xs
+        read_pp  52187/s      --    -64%
+        read_xs 145873/s    180%      --
+        #
+        # Using 64 key/value pairs
+                   Rate read_pp read_xs
+        read_pp 13307/s      --    -66%
+        read_xs 39519/s    197%      --
+        #
+        # Using 256 key/value pairs
+                   Rate read_pp read_xs
+        read_pp  3533/s      --    -65%
+        read_xs 10228/s    189%      --
+        #
+        # Using 1024 key/value pairs
+                  Rate read_pp read_xs
+        read_pp  899/s      --    -60%
+        read_xs 2265/s    152%      --
+
+=cut
+
+# checking field
+
+$map = {
+    split => sub {
+        return { map { ( split(m{:}), 3 )[ 0, 2 ] } split( m{\n}, $DATA ) }
+    },
+
+    # colon => sub {
+    #     my $a = Colon::Config::read( $DATA );
+    #     for ( my $i = 1 ; $i < scalar @$a; $i += 2 ) {
+    #         next unless defined $a->[ $i ];
+    #         # preserve bogus behavior
+    #         #do { $a->[ $i ] = 3; next } unless index( $a->[ $i ], ':' ) >= 0;
+    #         # suggested fix
+    #         #next unless index( $a->[ $i ], ':' ) >= 0;
+    #         $a->[ $i ] = ( split(  ':', $a->[ $i ], 3 ) ) [ 1 ] // 3; # // 3 to preserve bogus behavior
+    #     }
+
+    #     return { @$a };
+    # },
+    
+    field => sub {
+        return Colon::Config::read_as_hash( $DATA, 2 );
+    },
+};
+
+# sanity check
+$DATA = <<EOS;
+john:f1:f2:f3:f4
+cena:f1:f2:f3:f4
+EOS
+
+foreach my $method ( sort keys %$map ) {
+    is $map->{$method}->(), { john => 'f2', cena => 'f2' }, "testing $method";    
+}
+
+note "Running benchmark";
+for my $size ( 1, 4, 16, 64, 256, 1024 ) {
+    note "Using $size key/value pairs\n";
+
+    $DATA = '';
+    foreach my $id ( 1..$size ) {
+        $DATA .= "key$id:f1:f2:f3:f4\n";
+    }
+    Benchmark::cmpthese( - 5 => $map );
+    note "";
+}
 
 done_testing;
 
 __END__
 
-# Using 1 key/value pairs
-             Rate read_pp read_xs
-read_pp  628770/s      --    -66%
-read_xs 1869031/s    197%      --
-#
-# Using 4 key/value pairs
-            Rate read_pp read_xs
-read_pp 237209/s      --    -58%
-read_xs 569785/s    140%      --
-#
-# Using 16 key/value pairs
-            Rate read_pp read_xs
-read_pp  66985/s      --    -57%
-read_xs 157592/s    135%      --
-#
-# Using 64 key/value pairs
-           Rate read_pp read_xs
-read_pp 17805/s      --    -59%
-read_xs 43798/s    146%      --
-#
-# Using 256 key/value pairs
-           Rate read_pp read_xs
-read_pp  4678/s      --    -54%
-read_xs 10278/s    120%      --
-#
-# Using 1024 key/value pairs
-          Rate read_pp read_xs
-read_pp 1175/s      --    -55%
-read_xs 2598/s    121%      --
-#
