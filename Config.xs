@@ -141,11 +141,19 @@ SV* _parse_string_field(SV *sv, int need_field) {
 MODULE = Colon__Config       PACKAGE = Colon::Config
 
 SV*
-read_field(sv, field)
-  SV *sv;
-  int field;
+read(sv, ...)
+  SV *sv;  
 CODE:
   if ( sv && SvPOK(sv) ) {
+    int field = 0;
+    if ( items > 2 ) 
+      Perl_croak( "Too many arguments when calling 'Config::Colon::read'." );
+    if ( items == 2 ) {
+      SV *sv_field = ST(1);
+       if ( !SvOK(sv_field) || !SvIOK(sv_field) )
+          Perl_croak( "Config::Colon::read - Second argument must be one integer." );
+        field = SvIV(sv_field);
+    }
     RETVAL = _parse_string_field( sv, field );
   } else {
     RETVAL = &PL_sv_undef;
@@ -153,14 +161,3 @@ CODE:
 OUTPUT:
   RETVAL
 
-SV*
-read(sv)
-  SV *sv;
-CODE:
-  if ( sv && SvPOK(sv) ) {
-    RETVAL = _parse_string_field( sv, 0 );
-  } else {
-    RETVAL = &PL_sv_undef;
-  }
-OUTPUT:
-  RETVAL
