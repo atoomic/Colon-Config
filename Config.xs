@@ -85,13 +85,13 @@ SV* _parse_string_field(SV *sv, int need_field) {
 
     if ( *ptr == sep ) {
         //printf ("# separator key/value\n" );
-        if (need_field) ++found_sep;  
+        if (need_field) ++found_sep;
         if ( !end_key  ) {
-          end_key = ptr;  
-          if ( !need_field) found_sep = 1;        
+          end_key = ptr;
+          if ( !need_field) found_sep = 1;
         }
 
-        if ( need_field && found_sep == need_field + 2 ) {          
+        if ( need_field && found_sep == need_field + 2 ) {
           end_val = ptr;
           found_field = 1;
         }
@@ -121,7 +121,7 @@ SV* _parse_string_field(SV *sv, int need_field) {
             av_push(av, &PL_sv_undef); \
           } \
         } \
-/* end of __PARSE_STRING_LINE_FIELD */        
+/* end of __PARSE_STRING_LINE_FIELD */
 
         __PARSE_STRING_LINE_FIELD
 
@@ -142,11 +142,11 @@ MODULE = Colon__Config       PACKAGE = Colon::Config
 
 SV*
 read(sv, ...)
-  SV *sv;  
+  SV *sv;
 CODE:
   if ( sv && SvPOK(sv) ) {
     int field = 0;
-    if ( items > 2 ) 
+    if ( items > 2 )
       Perl_croak( "Too many arguments when calling 'Config::Colon::read'." );
     if ( items == 2 ) {
       SV *sv_field = ST(1);
