@@ -154,7 +154,7 @@ CODE:
           croak( "Config::Colon::read - Second argument must be one integer." );
         field = SvIV(sv_field);
         if ( field < 0 )
-          Perl_croak( aTHX_ "Config::Colon::read - field must be >= 0" );
+          croak( "Config::Colon::read - field must be >= 0" );
     }
     RETVAL = _parse_string_field( sv, field );
   } else {
