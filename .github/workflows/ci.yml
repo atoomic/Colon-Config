@@ -72,10 +72,11 @@ jobs:
       - uses: actions/checkout@v6
       - name: perl -V
         run: perl -V
-      - name: Install cpanm
-        run: curl -L https://cpanmin.us | perl - App::cpanminus
       - name: Install test dependencies
-        run: cpanm --notest --installdeps .
+        uses: perl-actions/install-with-cpanm@v1
+        with:
+          sudo: false
+          installdeps: true
       - name: Makefile.PL
         run: perl Makefile.PL
       - name: make test
