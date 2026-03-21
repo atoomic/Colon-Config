@@ -80,9 +80,15 @@ is $a,
     "read field=4" or diag explain { @$a };
 
 
-like ( 
+like (
     dies { Colon::Config::read( $content, 1, 2 ) },
     qr/Too many arguments/
+);
+
+like (
+    dies { Colon::Config::read( $content, -1 ) },
+    qr/field must be >= 0/,
+    "negative field index croaks"
 );
 
 done_testing;
