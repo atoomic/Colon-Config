@@ -76,6 +76,7 @@ jobs:
         uses: perl-actions/install-with-cpanm@v1
         with:
           sudo: false
+          cpanfile: ".github/cpanfile"
           installdeps: true
       - name: Makefile.PL
         run: perl Makefile.PL
