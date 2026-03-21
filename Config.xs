@@ -24,25 +24,22 @@ SV* _parse_string_field(SV *sv, int need_field) {
   char *start_key, *end_key;
   char *start_val, *end_val;
   char *max;
-
   int is_utf8 = SvUTF8(sv);
-
-  av = newAV();
-
   const char eol      = '\n';
   const char sep      = ':'; /* customize it later */
   const char comment  = '#';
   const char line_feed = '\r';
+  int found_eol = 1;
+  int found_comment = 0;
+  int found_sep  = 0;
+  int found_field = 0;
+
+  av = newAV();
 
   start_key = ptr;
   end_key   = 0;
   start_val = 0;
   end_val   = 0;
-
-  int found_eol = 1;
-  int found_comment = 0;
-  int found_sep  = 0;
-  int found_field = 0;
 
   for ( max = ptr + len ; ptr < max; ++ptr ) {
     if ( ! *ptr ) continue; /* skip \0 so we can parse binaries strings */
