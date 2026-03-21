@@ -72,6 +72,8 @@ jobs:
       - uses: actions/checkout@v6
       - name: perl -V
         run: perl -V
+      - name: Install test dependencies
+        run: cpanm --notest --installdeps .
       - name: Makefile.PL
         run: perl Makefile.PL
       - name: make test
@@ -93,6 +95,8 @@ jobs:
           echo "C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin" >> $env:GITHUB_PATH
       - name: perl -V
         run: perl -V
+      - name: Install test dependencies
+        run: cpanm --notest --installdeps .
       - name: Makefile.PL
         run: perl Makefile.PL
       - name: make test
