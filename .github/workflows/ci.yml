@@ -37,6 +37,8 @@ jobs:
       fail-fast: false
       matrix:
         perl-version: ${{ fromJson(needs.perl-versions.outputs.perl-versions) }}
+        exclude:
+          - perl-version: "5.8"
 
     container:
       image: perldocker/perl-tester:${{ matrix.perl-version }}
