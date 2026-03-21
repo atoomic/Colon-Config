@@ -22,9 +22,40 @@ BEGIN {
 }
 
 sub read_pp {
-    my ( $config ) = @_;
+    my ( $config, $field ) = @_;
 
-    return [ map { ( split( m{:\s+}, $_ ) )[ 0, 1 ] } split( m{\n}, $config ) ];
+    $field = 0 unless defined $field;
+
+    my @result;
+    for my $line ( split( m{\n}, $config ) ) {
+        $line =~ s/\r//g;
+        $line =~ s/^\s+//;
+        next if $line eq '';
+        next if $line =~ /^#/;
+
+        my @parts = split( /:/, $line, -1 );
+        next unless @parts > 1;
+
+        my $key = $parts[0];
+        my $value;
+
+        if ( $field == 0 ) {
+            $value = join( ':', @parts[ 1 .. $#parts ] );
+            $value =~ s/^\s+//;
+            $value =~ s/\s+$//;
+        }
+        elsif ( $field <= $#parts ) {
+            $value = $parts[$field];
+            $value =~ s/^\s+//;
+            $value =~ s/\s+$//;
+        }
+
+        $value = undef if defined $value && !length $value;
+
+        push @result, $key, $value;
+    }
+
+    return \@result;
 }
 
 sub read_as_hash {
