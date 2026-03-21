@@ -1,0 +1,7 @@
+requires 'ExtUtils::MakeMaker';
+requires 'File::Spec';
+requires 'File::Temp';
+requires 'Test2::Bundle::Extended';
+requires 'Test2::Plugin::NoWarnings';
+requires 'Test2::Tools::Explain';
+requires 'Test::More';
