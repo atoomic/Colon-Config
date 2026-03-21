@@ -14,6 +14,9 @@
 #include <XSUB.h>
 #include <embed.h>
 
+#define NEED_newSVpvn_flags
+#include "ppport.h"
+
 /* prototypes */
 SV* _parse_string_field(SV *sv, int need_field);
 
