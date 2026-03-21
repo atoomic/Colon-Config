@@ -147,11 +147,11 @@ CODE:
   if ( sv && SvPOK(sv) ) {
     int field = 0;
     if ( items > 2 )
-      Perl_croak( "Too many arguments when calling 'Config::Colon::read'." );
+      croak( "Too many arguments when calling 'Config::Colon::read'." );
     if ( items == 2 ) {
       SV *sv_field = ST(1);
        if ( !SvOK(sv_field) || !SvIOK(sv_field) )
-          Perl_croak( "Config::Colon::read - Second argument must be one integer." );
+          croak( "Config::Colon::read - Second argument must be one integer." );
         field = SvIV(sv_field);
     }
     RETVAL = _parse_string_field( sv, field );
