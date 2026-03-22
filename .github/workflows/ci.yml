@@ -10,6 +10,22 @@ on:
 
 jobs:
 
+  xs-lint:
+    runs-on: ubuntu-latest
+    name: XS portability lint
+    steps:
+      - uses: actions/checkout@v6
+      - name: Check for non-portable Perl API calls
+        run: |
+          # Perl_croak/Perl_warn/Perl_die require aTHX_ on threaded perls.
+          # Always use the croak()/warn()/die() macros instead — they handle
+          # the threading context automatically.
+          # See: https://github.com/atoomic/Colon-Config/issues/2
+          if grep -Pn '\bPerl_(croak|warn|die)\s*\(' Config.xs; then
+            echo "::error::Use croak()/warn()/die() macros instead of Perl_* functions for threaded perl compatibility"
+            exit 1
+          fi
+
   perl-versions:
     runs-on: ubuntu-latest
     name: List Perl versions
