@@ -91,6 +91,37 @@ like (
     "negative field index croaks"
 );
 
+# string numeric arguments should work (not just SvIOK integers)
+is Colon::Config::read( $content, "1" ),
+    [
+    key1 => 'f1',
+    key2 => 'f1',
+    key3 => undef,
+    last => 'value',
+    ],
+    "read with string '1' as field argument";
+
+is Colon::Config::read( $content, "2" ),
+    [
+    key1 => 'f2',
+    key2 => 'f2',
+    key3 => undef,
+    last => undef,
+    ],
+    "read with string '2' as field argument";
+
+like (
+    dies { Colon::Config::read( $content, "hello" ) },
+    qr/Second argument must be one integer/,
+    "non-numeric string field croaks"
+);
+
+like (
+    dies { Colon::Config::read( $content, "-1" ) },
+    qr/field must be >= 0/,
+    "negative string field croaks"
+);
+
 done_testing;
 
 __END__
