@@ -150,7 +150,7 @@ CODE:
       croak( "Too many arguments when calling 'Colon::Config::read'." );
     if ( items >= 2 ) {
       SV *sv_field = ST(1);
-       if ( !SvOK(sv_field) || !SvIOK(sv_field) )
+       if ( !SvOK(sv_field) || !looks_like_number(sv_field) )
           croak( "Colon::Config::read - Second argument must be one integer." );
         field = SvIV(sv_field);
         if ( field < 0 )
