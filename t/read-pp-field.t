@@ -81,4 +81,23 @@ is Colon::Config::read_pp($crlf_input),
     Colon::Config::read($crlf_input),
     "read_pp() strips CRLF line endings (matching XS)";
 
+# Validation: negative field
+like(
+    dies { Colon::Config::read_pp($content, -1) },
+    qr/field must be >= 0/,
+    "read_pp() negative field croaks"
+);
+
+# Validation: non-numeric string
+like(
+    dies { Colon::Config::read_pp($content, "hello") },
+    qr/Second argument must be one integer/,
+    "read_pp() non-numeric string croaks"
+);
+
+# String numeric arguments should work
+is Colon::Config::read_pp($content, "1"),
+    Colon::Config::read_pp($content, 1),
+    "read_pp() string '1' works like integer 1";
+
 done_testing;

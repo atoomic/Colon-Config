@@ -11,6 +11,9 @@ use 5.010;
 use strict;
 use warnings;
 
+use Carp ();
+use Scalar::Util ();
+
 # ABSTRACT: XS helper to read a configuration file using ':' as separator
 
 
@@ -36,7 +39,16 @@ BEGIN {
 sub read_pp {
     my ( $config, $field, $sep ) = @_;
 
-    $field = 0 unless defined $field;
+    if ( defined $field ) {
+        Carp::croak("Colon::Config::read_pp - Second argument must be one integer.")
+            unless Scalar::Util::looks_like_number($field);
+        $field = int($field);
+        Carp::croak("Colon::Config::read_pp - field must be >= 0")
+            if $field < 0;
+    }
+    else {
+        $field = 0;
+    }
 
     if ( defined $sep ) {
         die "Colon::Config::read_pp - Third argument must be a string.\n"
