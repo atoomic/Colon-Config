@@ -18,9 +18,9 @@
 #include "ppport.h"
 
 /* prototypes */
-SV* _parse_string_field(SV *sv, int need_field);
+SV* _parse_string_field(pTHX_ SV *sv, int need_field);
 
-SV* _parse_string_field(SV *sv, int need_field) {
+SV* _parse_string_field(pTHX_ SV *sv, int need_field) {
   int len = SvCUR(sv);
   char *ptr = (char *) SvPVX_const(sv); /* todo: preserve the const state of the pointer */
   AV   *av;
@@ -156,7 +156,7 @@ CODE:
         if ( field < 0 )
           croak( "Config::Colon::read - field must be >= 0" );
     }
-    RETVAL = _parse_string_field( sv, field );
+    RETVAL = _parse_string_field( aTHX_ sv, field );
   } else {
     RETVAL = &PL_sv_undef;
   }
