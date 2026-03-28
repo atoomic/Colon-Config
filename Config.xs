@@ -147,14 +147,14 @@ CODE:
   if ( sv && SvPOK(sv) ) {
     int field = 0;
     if ( items > 2 )
-      croak( "Too many arguments when calling 'Config::Colon::read'." );
+      croak( "Too many arguments when calling 'Colon::Config::read'." );
     if ( items == 2 ) {
       SV *sv_field = ST(1);
        if ( !SvOK(sv_field) || !SvIOK(sv_field) )
-          croak( "Config::Colon::read - Second argument must be one integer." );
+          croak( "Colon::Config::read - Second argument must be one integer." );
         field = SvIV(sv_field);
         if ( field < 0 )
-          croak( "Config::Colon::read - field must be >= 0" );
+          croak( "Colon::Config::read - field must be >= 0" );
     }
     RETVAL = _parse_string_field( sv, field );
   } else {
