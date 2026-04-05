@@ -69,4 +69,16 @@ is Colon::Config::read_pp($fruits, 99),
     Colon::Config::read($fruits, 99),
     "read_pp() fruits field=99 (out of range) matches read()";
 
+# Embedded \r in values: PP must preserve them like XS does
+my $cr_input = "key:val\rue\n";
+is Colon::Config::read_pp($cr_input),
+    Colon::Config::read($cr_input),
+    "read_pp() preserves embedded \\r in values (matching XS)";
+
+# CRLF line endings: \r should still be stripped from line endings
+my $crlf_input = "key:value\r\nother:data\r\n";
+is Colon::Config::read_pp($crlf_input),
+    Colon::Config::read($crlf_input),
+    "read_pp() strips CRLF line endings (matching XS)";
+
 done_testing;
