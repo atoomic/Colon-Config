@@ -45,7 +45,7 @@ sub read_pp {
     for my $line ( split( m{\n}, $config ) ) {
         $line =~ s/\0//g;
         $line =~ s/\r$//;
-        $line =~ s/^\s+//;
+        $line =~ s/^[ \t]+//;
         next if $line eq '';
         next if $line =~ /^#/;
 
@@ -58,13 +58,13 @@ sub read_pp {
 
         if ( $field == 0 ) {
             $value = join( $sep, @parts[ 1 .. $#parts ] );
-            $value =~ s/^\s+//;
-            $value =~ s/\s+$//;
+            $value =~ s/^[ \t]+//;
+            $value =~ s/[ \t]+$//;
         }
         elsif ( $field <= $#parts ) {
             $value = $parts[$field];
-            $value =~ s/^\s+//;
-            $value =~ s/\s+$//;
+            $value =~ s/^[ \t]+//;
+            $value =~ s/[ \t]+$//;
         }
 
         $value = undef if defined $value && !length $value;
