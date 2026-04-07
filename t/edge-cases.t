@@ -196,6 +196,26 @@ is Colon::Config::read_pp("key:val\rue\r\r\n"), Colon::Config::read("key:val\rue
         "XS/PP parity: trailing form feed in value";
 }
 
+# --- \r in key and empty key parity ---
+
+{
+    note "\\r in key and empty key parity";
+
+    # \r at start of line: XS skips it (same as leading whitespace)
+    is Colon::Config::read_pp("\rkey:value\n"), Colon::Config::read("\rkey:value\n"),
+        "XS/PP parity: \\r at start of line stripped";
+
+    # Empty key (colon at start of line): XS skips, PP must skip too
+    is Colon::Config::read_pp(":value\n"), Colon::Config::read(":value\n"),
+        "XS/PP parity: empty key skipped";
+    is Colon::Config::read_pp(":value\nreal:data\n"), Colon::Config::read(":value\nreal:data\n"),
+        "XS/PP parity: empty key skipped, valid line parsed";
+
+    # \r in field extraction: stripped from value boundaries
+    is Colon::Config::read_pp("a:b\r:c\n", 1), Colon::Config::read("a:b\r:c\n", 1),
+        "XS/PP parity: \\r in field extraction";
+}
+
 # --- read_as_hash edge cases ---
 
 {
