@@ -155,6 +155,16 @@ is Colon::Config::read("no sep 1\nno sep 2\nkey:value\nno sep 3\n"),
         "embedded \\r in value preserved by XS";
 }
 
+# Multiple trailing \r before \n: XS strips all, PP must match
+is Colon::Config::read("key:value\r\r\n"), [ key => 'value' ],
+    "double \\r before \\n stripped by XS";
+is Colon::Config::read_pp("key:value\r\r\n"), Colon::Config::read("key:value\r\r\n"),
+    "XS/PP parity: double \\r before \\n";
+
+# Embedded \r preserved even with trailing \r stripped
+is Colon::Config::read_pp("key:val\rue\r\r\n"), Colon::Config::read("key:val\rue\r\r\n"),
+    "XS/PP parity: embedded \\r preserved with trailing \\r stripped";
+
 # --- Non-standard whitespace characters (XS/PP parity) ---
 
 {
