@@ -155,6 +155,37 @@ is Colon::Config::read("no sep 1\nno sep 2\nkey:value\nno sep 3\n"),
         "embedded \\r in value preserved by XS";
 }
 
+# --- Non-standard whitespace characters (XS/PP parity) ---
+
+{
+    note "non-standard whitespace: form feed, vertical tab";
+
+    # XS only treats space (0x20) and tab (0x09) as whitespace.
+    # Characters like form feed (0x0C) and vertical tab (0x0B) are NOT
+    # whitespace in XS — they pass through as regular characters.
+    # PP must match this behavior.
+
+    # Form feed after separator: preserved in value
+    is Colon::Config::read("key:\x{0C}value\n"), [ 'key', "\x{0C}value" ],
+        "form feed after colon is NOT stripped (not whitespace in XS)";
+    is Colon::Config::read_pp("key:\x{0C}value\n"), Colon::Config::read("key:\x{0C}value\n"),
+        "XS/PP parity: form feed after colon";
+
+    # Vertical tab after separator: preserved in value
+    is Colon::Config::read("key:\x{0B}value\n"), [ 'key', "\x{0B}value" ],
+        "vertical tab after colon is NOT stripped (not whitespace in XS)";
+    is Colon::Config::read_pp("key:\x{0B}value\n"), Colon::Config::read("key:\x{0B}value\n"),
+        "XS/PP parity: vertical tab after colon";
+
+    # Form feed at start of line: becomes part of key
+    is Colon::Config::read_pp("\x{0C}key:value\n"), Colon::Config::read("\x{0C}key:value\n"),
+        "XS/PP parity: form feed at line start";
+
+    # Trailing form feed in value: preserved
+    is Colon::Config::read_pp("key:value\x{0C}\n"), Colon::Config::read("key:value\x{0C}\n"),
+        "XS/PP parity: trailing form feed in value";
+}
+
 # --- read_as_hash edge cases ---
 
 {
