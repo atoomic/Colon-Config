@@ -48,7 +48,7 @@ SV* _parse_string_field(pTHX_ SV *sv, int need_field) {
     if ( ! *ptr ) continue; /* skip \0 so we can parse binaries strings */
     if ( *ptr == line_feed ) continue; /* ignore \r */
 
-    //printf( "# %c\n", *ptr );
+    /* printf( "# %c\n", *ptr ); */
 
     /* skip all characters in a comment block */
     if ( found_comment ) {
@@ -84,7 +84,7 @@ SV* _parse_string_field(pTHX_ SV *sv, int need_field) {
     }
 
     if ( *ptr == sep ) {
-        //printf ("# separator key/value\n" );
+        /* printf ("# separator key/value\n" ); */
         if (need_field) ++found_sep;
         if ( !end_key  ) {
           end_key = ptr;
