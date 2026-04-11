@@ -32,6 +32,7 @@ sub read_pp {
 
     my @result;
     for my $line ( split( m{\n}, $config ) ) {
+        $line =~ s/\0//g;
         $line =~ s/\r$//;
         $line =~ s/^\s+//;
         next if $line eq '';
@@ -41,6 +42,7 @@ sub read_pp {
         next unless @parts > 1;
 
         my $key = $parts[0];
+        next unless length $key;
         my $value;
 
         if ( $field == 0 ) {
