@@ -21,7 +21,7 @@
 SV* _parse_string_field(pTHX_ SV *sv, int need_field, const char sep);
 
 SV* _parse_string_field(pTHX_ SV *sv, int need_field, const char sep) {
-  int len = SvCUR(sv);
+  STRLEN len = SvCUR(sv);
   char *ptr = (char *) SvPVX_const(sv); /* todo: preserve the const state of the pointer */
   AV   *av;
   char *start_key, *end_key;
@@ -105,7 +105,7 @@ SV* _parse_string_field(pTHX_ SV *sv, int need_field, const char sep) {
         /* check if we got a key (end_key is NULL when no separator was found) */ \
         if ( end_key && end_key > start_key ) { \
           /* we got a key */ \
-          av_push(av, newSVpvn_flags( start_key, (int) (end_key - start_key), is_utf8 )); \
+          av_push(av, newSVpvn_flags( start_key, (STRLEN) (end_key - start_key), is_utf8 )); \
 \
           /* remove the line_feed chars if any */ \
           while ( start_val && end_val > start_val && \
@@ -114,8 +114,8 @@ SV* _parse_string_field(pTHX_ SV *sv, int need_field, const char sep) {
             --end_val; \
           }  \
           /* only add the value if we have a key */ \
-          if ( start_val && ( (int ) ( end_val - start_val ) ) ) { \
-            av_push(av, newSVpvn_flags( start_val, (int) (end_val - start_val), is_utf8 )); \
+          if ( start_val && end_val > start_val ) { \
+            av_push(av, newSVpvn_flags( start_val, (STRLEN) (end_val - start_val), is_utf8 )); \
           } else { \
             av_push(av, &PL_sv_undef); \
           } \
