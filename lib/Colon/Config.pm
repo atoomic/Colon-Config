@@ -23,9 +23,12 @@ BEGIN {
 }
 
 sub read_pp {
-    my ( $config, $field ) = @_;
+    my ( $config, $field, $sep ) = @_;
 
     $field = 0 unless defined $field;
+    $sep = ':' unless defined $sep;
+
+    my $sep_re = quotemeta($sep);
 
     my @result;
     for my $line ( split( m{\n}, $config ) ) {
@@ -34,14 +37,14 @@ sub read_pp {
         next if $line eq '';
         next if $line =~ /^#/;
 
-        my @parts = split( /:/, $line, -1 );
+        my @parts = split( /$sep_re/, $line, -1 );
         next unless @parts > 1;
 
         my $key = $parts[0];
         my $value;
 
         if ( $field == 0 ) {
-            $value = join( ':', @parts[ 1 .. $#parts ] );
+            $value = join( $sep, @parts[ 1 .. $#parts ] );
             $value =~ s/^\s+//;
             $value =~ s/\s+$//;
         }
@@ -60,11 +63,13 @@ sub read_pp {
 }
 
 sub read_as_hash {
-    my ( $config, $field ) = @_;
+    my ( $config, $field, $sep ) = @_;
 
     $field = 0 unless defined $field;
 
-    my $av = Colon::Config::read($config, $field );
+    my $av = defined $sep
+        ? Colon::Config::read($config, $field, $sep)
+        : Colon::Config::read($config, $field);
     return {} unless $av;
 
     return { @$av };
@@ -112,23 +117,33 @@ This right now pretty similar to a double split like this one
 
 =head1 Available functions
 
-=head2 read( $content, [ $field=0 ] )
+=head2 read( $content, [ $field=0 ], [ $separator=':' ] )
 
 Parse the string $content and return an Array Ref with the list of key/values parsed.
 By default the value is the whole string after the first ':'.
 
-But you can also read the value from any custom field, where 1 is the first field after the key...
+You can also read the value from any custom field, where 1 is the first field after the key.
+
+An optional third argument specifies the separator character (default C<':'>).
+This must be a single character and cannot be a newline, carriage return, or null byte.
+
+    # Parse semicolon-separated data
+    my $result = Colon::Config::read("key;value1;value2", 0, ";");
+
+    # Parse pipe-separated data with field extraction
+    my $result = Colon::Config::read("name|age|city", 2, "|");  # field 2 = "city"
 
 # EXAMPLE: t/example-fruits.t
 
 Note: return undef when not called with a string
 
-=head2 read_as_hash( $content, [ $field=0 ] )
+=head2 read_as_hash( $content, [ $field=0 ], [ $separator=':' ] )
 
 This helper is provided as a convenient feature if you want to manipulate the Array Ref
 from read as a Hash Ref.
 
-Similarly to read you can also specify from which field the value should be read.
+Similarly to read you can also specify from which field the value should be read
+and an optional separator character.
 
 =head1 Benchmark
 
@@ -140,7 +155,7 @@ Here are some benchmarks to check the advantage of the XS helper, against a pure
 
 =over
 
-=item support for custom characters: separator, end of line, spaces, ...
+=item support for custom characters: end of line, spaces, ...
 
 =back
 
