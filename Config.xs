@@ -18,9 +18,9 @@
 #include "ppport.h"
 
 /* prototypes */
-SV* _parse_string_field(pTHX_ SV *sv, int need_field);
+SV* _parse_string_field(pTHX_ SV *sv, int need_field, const char sep);
 
-SV* _parse_string_field(pTHX_ SV *sv, int need_field) {
+SV* _parse_string_field(pTHX_ SV *sv, int need_field, const char sep) {
   int len = SvCUR(sv);
   char *ptr = (char *) SvPVX_const(sv); /* todo: preserve the const state of the pointer */
   AV   *av;
@@ -29,7 +29,6 @@ SV* _parse_string_field(pTHX_ SV *sv, int need_field) {
   char *max;
   int is_utf8 = SvUTF8(sv);
   const char eol      = '\n';
-  const char sep      = ':'; /* customize it later */
   const char comment  = '#';
   const char line_feed = '\r';
   int found_eol = 1;
@@ -146,9 +145,10 @@ read(sv, ...)
 CODE:
   if ( sv && SvPOK(sv) ) {
     int field = 0;
-    if ( items > 2 )
+    char sep = ':';
+    if ( items > 3 )
       croak( "Too many arguments when calling 'Colon::Config::read'." );
-    if ( items == 2 ) {
+    if ( items >= 2 ) {
       SV *sv_field = ST(1);
        if ( !SvOK(sv_field) || !SvIOK(sv_field) )
           croak( "Colon::Config::read - Second argument must be one integer." );
@@ -156,7 +156,20 @@ CODE:
         if ( field < 0 )
           croak( "Colon::Config::read - field must be >= 0" );
     }
-    RETVAL = _parse_string_field( aTHX_ sv, field );
+    if ( items == 3 ) {
+      SV *sv_sep = ST(2);
+      STRLEN sep_len;
+      char *sep_str;
+      if ( !SvOK(sv_sep) || !SvPOK(sv_sep) )
+        croak( "Colon::Config::read - Third argument must be a string." );
+      sep_str = SvPV(sv_sep, sep_len);
+      if ( sep_len != 1 )
+        croak( "Colon::Config::read - separator must be a single character." );
+      if ( sep_str[0] == '\n' || sep_str[0] == '\r' || sep_str[0] == '\0' )
+        croak( "Colon::Config::read - separator cannot be a newline, carriage return, or null character." );
+      sep = sep_str[0];
+    }
+    RETVAL = _parse_string_field( aTHX_ sv, field, sep );
   } else {
     RETVAL = &PL_sv_undef;
   }
