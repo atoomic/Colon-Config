@@ -81,8 +81,9 @@ is $a,
 
 
 like (
-    dies { Colon::Config::read( $content, 1, 2 ) },
-    qr/Too many arguments/
+    dies { Colon::Config::read( $content, 1, ":", "extra" ) },
+    qr/Too many arguments/,
+    "four arguments croaks"
 );
 
 like (
