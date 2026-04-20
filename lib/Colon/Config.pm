@@ -151,11 +151,19 @@ Here are some benchmarks to check the advantage of the XS helper, against a pure
 
 # EXAMPLE: examples/benchmark.t
 
+=head2 read_pp( $content, [ $field=0 ], [ $separator=':' ] )
+
+Pure Perl implementation of C<read()>.  Produces identical output to the XS
+version for all inputs and can be used as a fallback when XS compilation is
+not available.
+
+    my $result = Colon::Config::read_pp($content);
+
 =head1 TODO
 
 =over
 
-=item support for custom characters: end of line, spaces, ...
+=item support for custom end-of-line character
 
 =back
 
