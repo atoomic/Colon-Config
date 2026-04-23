@@ -56,6 +56,14 @@ use Colon::Config;
         "empty key line skipped, valid line parsed";
 }
 
+is Colon::Config::read("key:value\nno separator"),
+    [ key => 'value' ],
+    "no-separator line at end (no trailing newline) is skipped";
+
+is Colon::Config::read("no sep 1\nno sep 2\nkey:value\nno sep 3\n"),
+    [ key => 'value' ],
+    "multiple no-separator lines around a valid line";
+
 # --- Single key:value ---
 
 {

@@ -102,8 +102,8 @@ SV* _parse_string_field(pTHX_ SV *sv, int need_field, const char sep) {
         if (end_val && *end_val == line_feed) end_val = ptr - 1; \
         found_eol = 1; \
 \
-        /* check if we got a key */ \
-        if ( end_key > start_key ) { \
+        /* check if we got a key (end_key is NULL when no separator was found) */ \
+        if ( end_key && end_key > start_key ) { \
           /* we got a key */ \
           av_push(av, newSVpvn_flags( start_key, (int) (end_key - start_key), is_utf8 )); \
 \
