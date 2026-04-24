@@ -11,8 +11,6 @@ use 5.010;
 use strict;
 use warnings;
 
-use Carp ();
-
 # ABSTRACT: XS helper to read a configuration file using ':' as separator
 
 
@@ -41,11 +39,11 @@ sub read_pp {
     $field = 0 unless defined $field;
 
     if ( defined $sep ) {
-        Carp::croak("Colon::Config::read_pp - Third argument must be a string.")
+        die "Colon::Config::read_pp - Third argument must be a string.\n"
             unless !ref($sep);
-        Carp::croak("Colon::Config::read_pp - separator must be a single character.")
+        die "Colon::Config::read_pp - separator must be a single character.\n"
             unless length($sep) == 1;
-        Carp::croak("Colon::Config::read_pp - separator cannot be a newline, carriage return, or null character.")
+        die "Colon::Config::read_pp - separator cannot be a newline, carriage return, or null character.\n"
             if $sep eq "\n" || $sep eq "\r" || $sep eq "\0";
     }
     else {
