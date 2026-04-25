@@ -116,12 +116,12 @@ Colon::Config sample usage
 
 Colon::Config
 
-XS helper to read a configuration file using ':' as separator
-(could be customize later)
+XS helper to read a configuration file using C<':'> as the default separator.
+The separator can be customized via the optional third argument.
 
-This right now pretty similar to a double split like this one
+The basic operation is similar to a double split:
 
-    [ map { ( split( m{:\s+}, $_ ) )[ 0, 1 ] } split( m{\n}, $string ) ];
+    [ map { ( split( m{:}, $_, 2 ) ) } split( m{\n}, $string ) ];
 
 =head1 Basic parsing rules
 
@@ -182,11 +182,6 @@ from read as a Hash Ref.
 
 Similarly to read you can also specify from which field the value should be read
 and an optional separator character.
-
-=head2 read_pp( $content, [ $field=0 ] )
-
-Pure Perl implementation of read(). Used automatically when the XS library
-cannot be loaded. Can also be called directly for testing or comparison.
 
 =head1 Benchmark
 
