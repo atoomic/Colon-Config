@@ -2,6 +2,19 @@ Revision history for Colon-Config
 
 {{$NEXT}}
 
+- add configurable separator support (optional third argument to read)
+- add pure Perl fallback when XS cannot be loaded ($BACKEND variable)
+- add read_pp() as public API for the pure Perl implementation
+- fix threaded perl support (pTHX_ for internal helpers)
+- fix STRLEN type safety on 64-bit platforms
+- fix NULL pointer comparison in XS parser
+- fix namespace in error messages (Colon::Config, not Config::Colon)
+- fix embedded \r handling in pure Perl fallback
+- fix numeric string validation for field argument (looks_like_number)
+- C89 compliance fixes for older compilers
+- improve documentation with custom separator examples
+- add CI matrix: Linux (Perl 5.10–devel), macOS, Windows
+
 0.004     2018-12-28 10:33:56-07:00 America/Denver
 
 - handle '\r\n' as line endings
