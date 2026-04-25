@@ -39,7 +39,7 @@ sub read_pp {
     if ( defined $field ) {
         die "Colon::Config::read_pp - Second argument must be one integer.\n"
             unless $field =~ /\A\s*[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?\s*\z/;
-        $field = int($field);
+        $field = do { no warnings; int($field) };
         die "Colon::Config::read_pp - field must be >= 0\n"
             if $field < 0;
     }
