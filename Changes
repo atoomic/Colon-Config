@@ -2,6 +2,8 @@ Revision history for Colon-Config
 
 {{$NEXT}}
 
+0.005     2026-04-26 09:28:44+02:00 Europe/Vienna
+
 - add configurable separator support (optional third argument to read)
 - add pure Perl fallback when XS cannot be loaded ($BACKEND variable)
 - add read_pp() as public API for the pure Perl implementation
