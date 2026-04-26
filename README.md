@@ -4,7 +4,7 @@ Colon::Config - XS helper to read a configuration file using ':' as separator
 
 # VERSION
 
-version 0.004
+version 0.005
 
 # SYNOPSIS
 
@@ -99,6 +99,24 @@ is $hash = Colon::Config::read_as_hash( $data, 99 ), {
     'mum' => undef,
 } or diag explain $hash;
 
+# custom separator support
+
+my $csv = <<EOS;
+name;age;city
+alice;30;paris
+bob;25;london
+EOS
+
+is Colon::Config::read($csv, 0, ";"),
+    [ name => 'age;city', alice => '30;paris', bob => '25;london' ],
+    "semicolon separator, field=0 (full value after first separator)"
+    or diag explain Colon::Config::read($csv, 0, ";");
+
+is Colon::Config::read_as_hash($csv, 2, ";"),
+    { name => 'city', alice => 'paris', bob => 'london' },
+    "semicolon separator, field=2 via read_as_hash"
+    or diag explain Colon::Config::read_as_hash($csv, 2, ";");
+
 done_testing;
 ```
 
@@ -106,13 +124,13 @@ done_testing;
 
 Colon::Config
 
-XS helper to read a configuration file using ':' as separator
-(could be customize later)
+XS helper to read a configuration file using `':'` as the default separator.
+The separator can be customized via the optional third argument.
 
-This right now pretty similar to a double split like this one
+The basic operation is similar to a double split:
 
 ```perl
-[ map { ( split( m{:\s+}, $_ ) )[ 0, 1 ] } split( m{\n}, $string ) ];
+[ map { ( split( m{:}, $_, 2 ) ) } split( m{\n}, $string ) ];
 ```
 
 # Basic parsing rules
@@ -123,16 +141,41 @@ This right now pretty similar to a double split like this one
 - spaces or tab characters before a comment '#' are ignored
 - '\\n' is used for detecting 'End Of line'
 
+# XS / Pure Perl
+
+Colon::Config uses an XS (C) implementation by default for performance.
+If the XS library cannot be loaded (e.g. no C compiler available),
+it falls back to a pure Perl implementation automatically.
+
+You can check which backend is active:
+
+```
+if ($Colon::Config::BACKEND eq 'xs') {
+    # using XS (fast)
+} else {
+    # using pure Perl fallback
+}
+```
+
 # Available functions
 
-## read( $content, \[ $field=0 \] )
+## read( $content, \[ $field=0 \], \[ $separator=':' \] )
 
 Parse the string $content and return an Array Ref with the list of key/values parsed.
 By default the value is the whole string after the first ':'.
 
-But you can also read the value from any custom field, where 1 is the first field after the key...
+You can also read the value from any custom field, where 1 is the first field after the key.
+
+An optional third argument specifies the separator character (default `':'`).
+This must be a single character and cannot be a newline, carriage return, or null byte.
 
 ```perl
+   # Parse semicolon-separated data
+   my $result = Colon::Config::read("key;value1;value2", 0, ";");
+
+   # Parse pipe-separated data with field extraction
+   my $result = Colon::Config::read("name|age|city", 2, "|");  # field 2 = "city"
+
 #!perl
 
 use strict;
@@ -174,12 +217,13 @@ done_testing;
 
 Note: return undef when not called with a string
 
-## read\_as\_hash( $content, \[ $field=0 \] )
+## read\_as\_hash( $content, \[ $field=0 \], \[ $separator=':' \] )
 
 This helper is provided as a convenient feature if you want to manipulate the Array Ref
 from read as a Hash Ref.
 
-Similarly to read you can also specify from which field the value should be read.
+Similarly to read you can also specify from which field the value should be read
+and an optional separator character.
 
 # Benchmark
 
@@ -353,9 +397,19 @@ done_testing;
 __END__
 ```
 
+## read\_pp( $content, \[ $field=0 \], \[ $separator=':' \] )
+
+Pure Perl implementation of `read()`.  Produces identical output to the XS
+version for all inputs and can be used as a fallback when XS compilation is
+not available.
+
+```perl
+my $result = Colon::Config::read_pp($content);
+```
+
 # TODO
 
-- support for custom characters: separator, end of line, spaces, ...
+- support for custom end-of-line character
 
 # LICENSE
 
