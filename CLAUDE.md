@@ -8,7 +8,7 @@ It provides a fast C parser with a pure Perl fallback (`read_pp`) for environmen
 - CPAN distribution: `Colon-Config`
 - Perl package: `Colon::Config`
 - MIN_PERL_VERSION: 5.010
-- Default branch: `master`
+- Default branch: `main`
 - Upstream: `atoomic/Colon-Config`
 
 ## Build and test
