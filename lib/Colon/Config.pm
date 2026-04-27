@@ -63,7 +63,6 @@ sub read_pp {
 
     my @result;
     for my $line ( split( m{\n}, $config ) ) {
-        $line =~ s/\0//g;
         $line =~ s/\r+$//;
         $line =~ s/^[ \t\r\0]+//;
         next if $line eq '';
