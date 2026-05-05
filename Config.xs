@@ -36,6 +36,15 @@ SV* _parse_string_field(pTHX_ SV *sv, int need_field, const char sep) {
   int found_sep  = 0;
   int found_field = 0;
 
+  /* Skip UTF-8 BOM (EF BB BF) if present at the start of the string */
+  if ( len >= 3
+    && (unsigned char)ptr[0] == 0xEF
+    && (unsigned char)ptr[1] == 0xBB
+    && (unsigned char)ptr[2] == 0xBF ) {
+    ptr += 3;
+    len -= 3;
+  }
+
   av = newAV();
 
   start_key = ptr;
