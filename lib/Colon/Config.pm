@@ -61,6 +61,9 @@ sub read_pp {
 
     my $sep_re = quotemeta($sep);
 
+    # Strip UTF-8 BOM if present at start of input
+    $config =~ s/\A\xEF\xBB\xBF//;
+
     my @result;
     for my $line ( split( m{\n}, $config ) ) {
         $line =~ s/\0//g;
