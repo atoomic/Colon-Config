@@ -104,6 +104,14 @@ SV* _parse_string_field(pTHX_ SV *sv, int need_field, const char sep) {
 \
         /* check if we got a key (end_key is NULL when no separator was found) */ \
         if ( end_key && end_key > start_key ) { \
+          /* trim trailing spaces/tabs from key */ \
+          while ( end_key > start_key && \
+            ( *(end_key - 1) == ' ' || *(end_key - 1) == '\t' ) \
+          ) { \
+            --end_key; \
+          } \
+        } \
+        if ( end_key && end_key > start_key ) { \
           /* we got a key */ \
           av_push(av, newSVpvn_flags( start_key, (STRLEN) (end_key - start_key), is_utf8 )); \
 \
