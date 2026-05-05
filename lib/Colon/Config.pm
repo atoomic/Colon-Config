@@ -73,6 +73,7 @@ sub read_pp {
         next unless @parts > 1;
 
         my $key = $parts[0];
+        $key =~ s/[ \t]+$//;
         next unless length $key;
         my $value;
 

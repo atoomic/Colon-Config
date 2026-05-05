@@ -113,6 +113,29 @@ is Colon::Config::read("no sep 1\nno sep 2\nkey:value\nno sep 3\n"),
         "leading tab in key is trimmed";
     is Colon::Config::read("key with spaces:value\n"), [ 'key with spaces', 'value' ],
         "spaces within key are preserved";
+    is Colon::Config::read("key  :value\n"), [ 'key', 'value' ],
+        "trailing spaces in key are trimmed";
+    is Colon::Config::read("key\t:value\n"), [ 'key', 'value' ],
+        "trailing tab in key is trimmed";
+    is Colon::Config::read("key \t :value\n"), [ 'key', 'value' ],
+        "mixed trailing whitespace in key is trimmed";
+    is Colon::Config::read("  key  :  value  \n"), [ 'key', 'value' ],
+        "both leading and trailing key whitespace trimmed";
+
+    # Aligned config style — common in human-edited files
+    my $aligned = "host     : localhost\nport     : 8080\ndatabase : mydb\n";
+    is Colon::Config::read($aligned),
+        [ 'host', 'localhost', 'port', '8080', 'database', 'mydb' ],
+        "aligned config keys are trimmed";
+
+    # XS/PP parity for trailing key whitespace
+    is Colon::Config::read_pp("key  :value\n"), Colon::Config::read("key  :value\n"),
+        "XS/PP parity: trailing spaces in key";
+    is Colon::Config::read_pp("  key  :  value  \n"),
+        Colon::Config::read("  key  :  value  \n"),
+        "XS/PP parity: whitespace around key and value";
+    is Colon::Config::read_pp($aligned), Colon::Config::read($aligned),
+        "XS/PP parity: aligned config";
 }
 
 # --- Trailing whitespace in values ---
