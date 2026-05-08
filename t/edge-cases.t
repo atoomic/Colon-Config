@@ -42,6 +42,11 @@ use Colon::Config;
     my $num = 42;
     is Colon::Config::read($num), undef, "integer input returns undef"
         or diag explain Colon::Config::read($num);
+
+    # read_pp must also return undef for undef and reference inputs
+    is Colon::Config::read_pp(undef), undef, "read_pp(undef) returns undef";
+    is Colon::Config::read_pp([1,2]), undef, "read_pp(arrayref) returns undef";
+    is Colon::Config::read_pp({a=>1}), undef, "read_pp(hashref) returns undef";
 }
 
 # --- Empty key ---
