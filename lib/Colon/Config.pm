@@ -108,6 +108,29 @@ sub read_as_hash {
     return { @$av };
 }
 
+sub read_file {
+    my ( $path, $field, $sep ) = @_;
+
+    open my $fh, '<:raw', $path
+        or die "Colon::Config::read_file - Cannot open '$path': $!\n";
+    local $/;
+    my $content = <$fh>;
+    close $fh;
+
+    $field = 0 unless defined $field;
+
+    return defined $sep
+        ? Colon::Config::read( $content, $field, $sep )
+        : Colon::Config::read( $content, $field );
+}
+
+sub read_file_as_hash {
+    my ( $path, $field, $sep ) = @_;
+
+    my $av = read_file( $path, $field, $sep );
+    return { @$av };
+}
+
 
 1;
 
@@ -197,6 +220,30 @@ and an optional separator character.
 Here are some benchmarks to check the advantage of the XS helper, against a pure perl alternative.
 
 # EXAMPLE: examples/benchmark.t
+
+=head2 read_file( $path, [ $field=0 ], [ $separator=':' ] )
+
+Read a configuration file from disk and parse it.  Equivalent to slurping
+the file and passing its contents to C<read()>.
+
+    my $result = Colon::Config::read_file('/etc/passwd');
+
+    # With field extraction
+    my $shells = Colon::Config::read_file('/etc/passwd', 6);
+
+    # With custom separator
+    my $data = Colon::Config::read_file('config.ini', 0, '=');
+
+Dies if the file cannot be opened.  The file is read in binary (C<:raw>)
+mode; the parser handles line endings internally.
+
+=head2 read_file_as_hash( $path, [ $field=0 ], [ $separator=':' ] )
+
+Convenience wrapper that reads a file and returns the result as a hash
+reference.
+
+    my $users = Colon::Config::read_file_as_hash('/etc/passwd', 4);
+    say $users->{root};  # "root" (GECOS field)
 
 =head2 read_pp( $content, [ $field=0 ], [ $separator=':' ] )
 
