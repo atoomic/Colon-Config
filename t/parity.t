@@ -26,6 +26,24 @@ sub parity_ok {
         or diag "XS: " . explain($xs) . "\nPP: " . explain($pp);
 }
 
+# --- undef input ---
+
+{
+    my $xs = Colon::Config::read(undef);
+    my $pp = Colon::Config::read_pp(undef);
+    is $pp, $xs, "undef input: both return undef";
+
+    my $ref = [1, 2, 3];
+    $xs = Colon::Config::read($ref);
+    $pp = Colon::Config::read_pp($ref);
+    is $pp, $xs, "arrayref input: both return undef";
+
+    my $href = { a => 1 };
+    $xs = Colon::Config::read($href);
+    $pp = Colon::Config::read_pp($href);
+    is $pp, $xs, "hashref input: both return undef";
+}
+
 # --- Empty and minimal inputs ---
 
 parity_ok("",                        0, "empty string");

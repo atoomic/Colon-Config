@@ -36,6 +36,8 @@ BEGIN {
 sub read_pp {
     my ( $config, $field, $sep ) = @_;
 
+    return undef unless defined $config && !ref($config);
+
     if ( defined $field ) {
         die "Colon::Config::read_pp - Second argument must be one integer.\n"
             unless $field =~ /\A\s*[+-]?(?:\d+\.?\d*|\.\d+)(?:[eE][+-]?\d+)?\s*\z/;
