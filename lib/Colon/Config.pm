@@ -123,28 +123,43 @@ Colon::Config sample usage
 
 =head1 DESCRIPTION
 
-Colon::Config
-
-XS helper to read a configuration file using C<':'> as the default separator.
-The separator can be customized via the optional third argument.
+Fast XS parser for colon-separated configuration files such as C</etc/passwd>,
+C</etc/group>, and similar Unix-style formats.  Parses a string and returns an
+arrayref of key/value pairs.  The separator character defaults to C<':'> but can
+be customized, making the module useful for any single-character delimited format
+(semicolons, pipes, tabs, etc.).
 
 The basic operation is similar to a double split:
 
     [ map { ( split( m{:}, $_, 2 ) ) } split( m{\n}, $string ) ];
 
-=head1 Basic parsing rules
+but significantly faster thanks to a single-pass C state machine that avoids
+intermediate string copies.  A pure Perl fallback (C<read_pp>) is provided for
+environments where XS compilation is not available.
+
+=head1 Parsing rules
 
 =over
 
-=item ':' is the default character separator between key and value 
+=item * C<':'> is the default separator between key and value (customizable via the third argument).
 
-=item spaces or tab characters after ':' are ignored
+=item * C<'#'> at the start of a line (after optional whitespace) begins a comment.  C<'#'> inside values is treated as a literal character.
 
-=item '#' indicates the beginning of a comment line
+=item * Leading spaces and tabs on keys are stripped.
 
-=item spaces or tab characters before a comment '#' are ignored
+=item * Spaces and tabs around values are stripped.
 
-=item '\n' is used for detecting 'End Of line'
+=item * C<'\n'> marks end of line.  C<'\r'> is silently ignored everywhere.
+
+=item * NUL bytes (C<'\0'>) are silently skipped.
+
+=item * Lines without a separator are ignored (no key/value produced).
+
+=item * Lines where the key is empty (separator is the first character) are skipped.
+
+=item * When a value is empty (nothing after the separator, or only whitespace), C<undef> is returned for that value.
+
+=item * When extracting a specific field (C<$field E<gt> 0>) that does not exist on a line, C<undef> is returned.
 
 =back
 
